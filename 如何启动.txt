@@ -1,0 +1,43 @@
+# Web UI 启动方法
+
+## 方法 1：直接双击运行 (推荐)
+直接双击 `启动WebUI.bat` 文件
+
+## 方法 2：在命令行中运行
+打开命令提示符(cmd)或PowerShell，执行：
+```bash
+cd "E:\work\comfyui应用"
+python bailian_webui.py
+```
+
+## 方法 3：Python启动器
+```bash
+python 启动器.py
+```
+
+## 访问地址
+启动成功后，在浏览器访问：
+- http://127.0.0.1:7860
+
+如果该端口被占用，会尝试：7861, 7862, 7870, 8000, 8080
+
+## 停止服务
+在运行窗口中按 `Ctrl+C` 停止服务
+
+## 常见问题
+
+**Q: 双击bat文件后窗口一闪而过**
+A: 请先在cmd中运行，查看具体错误：
+```bash
+cd "E:\work\comfyui应用"
+python bailian_webui.py
+```
+
+**Q: 提示找不到python**
+A: 请确保Python已安装并添加到环境变量
+
+**Q: 提示缺少gradio模块**
+A: 安装依赖：
+```bash
+pip install gradio requests
+```
