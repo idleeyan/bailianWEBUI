@@ -1,0 +1,40 @@
+# 忽略生成的图像文件
+generated_images/
+
+# 忽略Python编译文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 忽略虚拟环境
+venv/
+.venv/
+env/
+
+# 忽略日志文件
+*.log
+*.tmp
+
+# 忽略配置文件（包含敏感信息）
+api_key.txt
+*.env
+
+# 忽略操作系统文件
+.DS_Store
+Thumbs.db
+
+# 忽略IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 忽略构建文件
+dist/
+build/
+*.egg-info/
+
+# 忽略视频生成文件
+generated_videos/
