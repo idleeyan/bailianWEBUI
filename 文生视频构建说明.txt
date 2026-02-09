@@ -1,0 +1,150 @@
+万相文生视频模型基于文本提示词，生成一段流畅的视频。
+示例：
+
+多镜头叙事：
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.6-t2v",
+    "input": {
+        "prompt": "一幅史诗级可爱的场景。一只小巧可爱的卡通小猫将军，身穿细节精致的金色盔甲，头戴一个稍大的头盔，勇敢地站在悬崖上。他骑着一匹虽小但英勇的战马，说：”青海长云暗雪山，孤城遥望玉门关。黄沙百战穿金甲，不破楼兰终不还。“。悬崖下方，一支由老鼠组成的、数量庞大、无穷无尽的军队正带着临时制作的武器向前冲锋。这是一个戏剧性的、大规模的战斗场景，灵感来自中国古代的战争史诗。远处的雪山上空，天空乌云密布。整体氛围是“可爱”与“霸气”的搞笑和史诗般的融合。",
+        "audio_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250923/hbiayh/%E4%BB%8E%E5%86%9B%E8%A1%8C.mp3"
+    },
+    "parameters": {
+        "size": "1280*720",
+        "prompt_extend": true,
+        "duration": 10,
+        "shot_type":"multi"
+    }
+}'
+
+自动配音：
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.6-t2v",
+    "input": {
+        "prompt": "一幅史诗级可爱的场景。一只小巧可爱的卡通小猫将军，身穿细节精致的金色盔甲，头戴一个稍大的头盔，勇敢地站在悬崖上。他骑着一匹虽小但英勇的战马，说：”青海长云暗雪山，孤城遥望玉门关。黄沙百战穿金甲，不破楼兰终不还。“。悬崖下方，一支由老鼠组成的、数量庞大、无穷无尽的军队正带着临时制作的武器向前冲锋。这是一个戏剧性的、大规模的战斗场景，灵感来自中国古代的战争史诗。远处的雪山上空，天空乌云密布。整体氛围是“可爱”与“霸气”的搞笑和史诗般的融合。",
+        "audio_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250923/hbiayh/%E4%BB%8E%E5%86%9B%E8%A1%8C.mp3"
+    },
+    "parameters": {
+        "size": "1280*720",
+        "prompt_extend": true,
+        "duration": 10,
+        "shot_type":"multi"
+    }
+}'
+
+传入音频文件：
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.5-t2v-preview",
+    "input": {
+        "prompt": "一幅史诗级可爱的场景。一只小巧可爱的卡通小猫将军，身穿细节精致的金色盔甲，头戴一个稍大的头盔，勇敢地站在悬崖上。他骑着一匹虽小但英勇的战马，说：”青海长云暗雪山，孤城遥望玉门关。黄沙百战穿金甲，不破楼兰终不还。“。悬崖下方，一支由老鼠组成的、数量庞大、无穷无尽的军队正带着临时制作的武器向前冲锋。这是一个戏剧性的、大规模的战斗场景，灵感来自中国古代的战争史诗。远处的雪山上空，天空乌云密布。整体氛围是“可爱”与“霸气”的搞笑和史诗般的融合。",
+        "audio_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250923/hbiayh/%E4%BB%8E%E5%86%9B%E8%A1%8C.mp3"
+    },
+    "parameters": {
+        "size": "832*480",
+        "prompt_extend": true,
+        "duration": 10
+    }
+}'
+生成无声视频：
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-t2v-plus",
+    "input": {
+        "prompt": "低对比度，在一个复古的70年代风格地铁站里，街头音乐家在昏暗的色彩和粗糙的质感中演奏。他穿着旧式夹克，手持吉他，专注地弹奏。通勤者匆匆走过，一小群人渐渐聚拢聆听。镜头慢慢向右移动，捕捉到乐器声与城市喧嚣交织的场景，背景中有老式的地铁标志和斑驳的墙面。"
+    },
+    "parameters": {
+        "size": "832*480",
+        "prompt_extend": true
+    }
+}'
+
+使用反向提示词：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-t2v-plus",
+    "input": {
+        "prompt": "一只小猫在月光下奔跑",
+        "negative_prompt": "花朵"
+    },
+    "parameters": {
+        "size": "832*480"
+    }
+}'
+
+指定生成的视频分辨率，格式为宽*高。该参数的默认值和可用枚举值依赖于 model 参数，规则如下：
+
+wan2.6-t2v：默认值为 1920*1080（1080P）。可选分辨率：720P、1080P对应的所有分辨率。
+
+wan2.6-t2v-us：默认值为 1920*1080（1080P）。可选分辨率：720P、1080P对应的所有分辨率。
+
+wan2.5-t2v-preview：默认值为 1920*1080（1080P）。可选分辨率：480P、720P、1080P对应的所有分辨率。
+
+wan2.2-t2v-plus：默认值为 1920*1080（1080P）。可选分辨率：480P、1080P对应的所有分辨率。
+
+wanx2.1-t2v-turbo ：默认值为 1280*720（720P）。可选分辨率：480P、720P 对应的所有分辨率。
+
+wanx2.1-t2v-plus：默认值为1280*720（720P）。可选分辨率：720P 对应的所有分辨率。
+
+480P档位：可选的视频分辨率及其对应的视频宽高比为：
+
+832*480：16:9。
+
+480*832：9:16。
+
+624*624：1:1。
+
+720P档位：可选的视频分辨率及其对应的视频宽高比为：
+
+1280*720：16:9。
+
+720*1280：9:16。
+
+960*960：1:1。
+
+1088*832：4:3。
+
+832*1088：3:4。
+
+1080P档位：可选的视频分辨率及其对应的视频宽高比为：
+
+1920*1080： 16:9。
+
+1080*1920： 9:16。
+
+1440*1440： 1:1。
+
+1632*1248： 4:3。
+
+1248*1632： 3:4。
+
+生成视频的时长，单位为秒。该参数的取值依赖于 model参数：
+
+wan2.6-t2v：取值为[2, 15]之间的整数。默认值为5。
+
+wan2.6-t2v-us：可选值为5、10。默认值为5。
+
+wan2.5-t2v-preview：可选值为5、10。默认值为5。
+
+wan2.2-t2v-plus：固定为5秒，且不支持修改。
+
+wanx2.1-t2v-plus：固定为5秒，且不支持修改。
+
+wanx2.1-t2v-turbo：固定为5秒，且不支持修改。
