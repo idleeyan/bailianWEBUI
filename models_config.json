@@ -1,0 +1,71 @@
+{
+    "image": {
+        "通义万相-文生图V1": "wanx-v1",
+        "通义万相2.1-Turbo": "wanx2.1-t2i-turbo",
+        "通义万相2.1-Plus": "wanx2.1-t2i-plus",
+        "通义万相2.6-文生图": "wan2.6-t2i",
+        "通义万相2.5-文生图预览": "wan2.5-t2i-preview",
+        "通义万相2.2-文生图Plus": "wan2.2-t2i-plus",
+        "通义万相2.2-文生图Flash": "wan2.2-t2i-flash",
+        "通义万相2.0-Turbo": "wan2.0-t2i-turbo",
+        "通义千问-图像生成": "qwen-image",
+        "通义千问-图像Plus": "qwen-image-plus",
+        "通义千问-图像Max": "qwen-image-max",
+        "通义千问-图像Turbo": "qwen-image-turbo",
+        "通义千问-图像Plus(2026)": "qwen-image-plus-2026-01-09",
+        "通义千问-图像Max(2025)": "qwen-image-max-2025-12-30",
+        "Flux-Schnell": "flux-schnell",
+        "Flux-Dev": "flux-dev",
+        "Flux-Merged": "flux-merged",
+        "通义万相-草图生图": "wanx-sketch-to-image-lite",
+        "通义万相-X绘画": "wanx-x-painting",
+        "通义万相-风格重绘": "wanx-style-repaint-v1",
+        "通义万相-背景生成V2": "wanx-background-generation-v2",
+        "通义万相-海报生成": "wanx-poster-generation-v1",
+        "通义万相-虚拟模特": "wanx-virtualmodel",
+        "图像画面扩展": "image-out-painting",
+        "通义万相2.1-图像编辑": "wanx2.1-imageedit",
+        "通义万相2.1-VACE Plus": "wanx2.1-vace-plus",
+        "通义万相2.5-图生图": "wan2.5-i2i-preview",
+        "艺术字-语义": "wordart-semantic",
+        "艺术字-纹理": "wordart-texture",
+        "虚拟试衣": "aitryon",
+        "虚拟试衣Plus": "aitryon-plus",
+        "虚拟试衣精修": "aitryon-refiner",
+        "虚拟试衣解析": "aitryon-parsing-v1",
+        "Emoji生成": "emoji-v1",
+        "Emoji检测": "emoji-detect-v1",
+        "通义千问-多语言图像": "qwen-mt-image"
+    },
+    "video": {
+        "通义万相2.6-T2V": "wan2.6-t2v",
+        "通义万相2.5-T2V预览": "wan2.5-t2v-preview",
+        "通义万相2.2-T2V-Plus": "wan2.2-t2v-plus",
+        "通义万相2.1-T2V-Plus": "wanx2.1-t2v-plus",
+        "通义万相2.1-T2V-Turbo": "wanx2.1-t2v-turbo"
+    },
+    "edit": {
+        "通义千问-图像编辑": "qwen-image-edit",
+        "通义千问-图像编辑Plus": "qwen-image-edit-plus",
+        "通义千问-图像编辑Max": "qwen-image-edit-max",
+        "图像编辑Plus(2025-12)": "qwen-image-edit-plus-2025-12-15",
+        "图像编辑Plus(2025-10)": "qwen-image-edit-plus-2025-10-30",
+        "图像编辑Max(2026)": "qwen-image-edit-max-2026-01-16"
+    },
+    "turbo": {
+        "Z-IMAGE-turbo 极速生图": "z-image-turbo"
+    },
+    "i2v": {
+        "通义万相2.6-I2V-Flash": "wan2.6-i2v-flash",
+        "通义万相2.6-I2V": "wan2.6-i2v",
+        "通义万相2.5-I2V预览": "wan2.5-i2v-preview",
+        "通义万相2.2-I2V-Plus": "wan2.2-i2v-plus",
+        "通义万相2.2-I2V-Flash": "wan2.2-i2v-flash",
+        "通义万相2.1-I2V-Plus": "wanx2.1-i2v-plus",
+        "通义万相2.1-I2V-Turbo": "wanx2.1-i2v-turbo"
+    },
+    "kf2v": {
+        "通义万相2.2-KF2V-Flash": "wan2.2-kf2v-flash",
+        "通义万相2.1-KF2V-Plus": "wanx2.1-kf2v-plus"
+    }
+}

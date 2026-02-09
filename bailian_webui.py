@@ -8,8 +8,10 @@
 
 import os
 import sys
+import json
 
 # 修复 Windows 命令行编码问题
+# ... (保持原有的编码修复代码)
 if sys.platform == 'win32':
     import io
     import ctypes
@@ -43,82 +45,83 @@ VERSION = "1.2.0"
 # 全局生成器实例
 generator = None
 API_KEY_FILE = "api_key.txt"
+MODELS_CONFIG_FILE = "models_config.json"
 
-# 文生图模型选项
-MODEL_CHOICES = {
-    # 文生图模型
-    "通义万相-文生图V1": "wanx-v1",
-    "通义万相2.1-Turbo": "wanx2.1-t2i-turbo",
-    "通义万相2.1-Plus": "wanx2.1-t2i-plus",
-    "通义万相2.6-文生图": "wan2.6-t2i",
-    "通义万相2.5-文生图预览": "wan2.5-t2i-preview",
-    "通义万相2.2-文生图Plus": "wan2.2-t2i-plus",
-    "通义万相2.2-文生图Flash": "wan2.2-t2i-flash",
-    "通义万相2.0-Turbo": "wan2.0-t2i-turbo",
+def load_models_config():
+    """加载模型配置"""
+    if os.path.exists(MODELS_CONFIG_FILE):
+        try:
+            with open(MODELS_CONFIG_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            pass
+    # 默认配置
+    default_config = {
+        "image": {
+            "通义万相-文生图V1": "wanx-v1",
+            "通义万相2.6-文生图": "wan2.6-t2i",
+            "通义万相2.1-Turbo": "wanx2.1-t2i-turbo",
+            "通义千问-图像生成": "qwen-image",
+            "Flux-Schnell": "flux-schnell"
+        },
+        "video": {
+            "通义万相2.6-T2V": "wan2.6-t2v",
+            "通义万相2.5-T2V预览": "wan2.5-t2v-preview"
+        },
+        "edit": {
+            "通义千问-图像编辑Plus": "qwen-image-edit-plus",
+            "通义千问-图像编辑Max": "qwen-image-edit-max"
+        },
+        "turbo": {
+            "Z-IMAGE-turbo 极速生图": "z-image-turbo"
+        },
+        "i2v": {
+            "通义万相2.6-I2V-Flash": "wan2.6-i2v-flash",
+            "通义万相2.5-I2V预览": "wan2.5-i2v-preview"
+        },
+        "kf2v": {
+            "通义万相2.2-KF2V-Flash": "wan2.2-kf2v-flash",
+            "通义万相2.1-KF2V-Plus": "wanx2.1-kf2v-plus"
+        }
+    }
+    # 保存默认配置
+    save_models_config(default_config)
+    return default_config
 
-    # Qwen图像模型
-    "通义千问-图像生成": "qwen-image",
-    "通义千问-图像Plus": "qwen-image-plus",
-    "通义千问-图像Max": "qwen-image-max",
-    "通义千问-图像Turbo": "qwen-image-turbo",
-    "通义千问-图像Plus(2026)": "qwen-image-plus-2026-01-09",
-    "通义千问-图像Max(2025)": "qwen-image-max-2025-12-30",
+def save_models_config(config):
+    """保存模型配置"""
+    try:
+        with open(MODELS_CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"保存模型配置失败: {e}")
 
-    # Flux模型
-    "Flux-Schnell": "flux-schnell",
-    "Flux-Dev": "flux-dev",
-    "Flux-Merged": "flux-merged",
+# 初始化模型列表
+ALL_MODELS = load_models_config()
 
-    # 其他图像生成
-    "通义万相-草图生图": "wanx-sketch-to-image-lite",
-    "通义万相-X绘画": "wanx-x-painting",
-    "通义万相-风格重绘": "wanx-style-repaint-v1",
-    "通义万相-背景生成V2": "wanx-background-generation-v2",
-    "通义万相-海报生成": "wanx-poster-generation-v1",
-    "通义万相-虚拟模特": "wanx-virtualmodel",
+# 快捷引用字典（修复 NameError）
+MODEL_CHOICES = ALL_MODELS["image"]
+VIDEO_MODEL_CHOICES = ALL_MODELS["video"]
+EDIT_MODEL_CHOICES = ALL_MODELS["edit"]
+TURBO_MODEL_CHOICES = ALL_MODELS["turbo"]
+I2V_MODEL_CHOICES = ALL_MODELS["i2v"]
+KF2V_MODEL_CHOICES = ALL_MODELS["kf2v"]
 
-    # 图像扩展/编辑
-    "图像画面扩展": "image-out-painting",
-    "通义万相2.1-图像编辑": "wanx2.1-imageedit",
-    "通义万相2.1-VACE Plus": "wanx2.1-vace-plus",
-    "通义万相2.5-图生图": "wan2.5-i2i-preview",
+def update_all_choices():
+    """更新全局快捷引用"""
+    global MODEL_CHOICES, VIDEO_MODEL_CHOICES, EDIT_MODEL_CHOICES, TURBO_MODEL_CHOICES, I2V_MODEL_CHOICES, KF2V_MODEL_CHOICES
+    MODEL_CHOICES = ALL_MODELS["image"]
+    VIDEO_MODEL_CHOICES = ALL_MODELS["video"]
+    EDIT_MODEL_CHOICES = ALL_MODELS["edit"]
+    TURBO_MODEL_CHOICES = ALL_MODELS["turbo"]
+    I2V_MODEL_CHOICES = ALL_MODELS["i2v"]
+    KF2V_MODEL_CHOICES = ALL_MODELS["kf2v"]
 
-    # 艺术字
-    "艺术字-语义": "wordart-semantic",
-    "艺术字-纹理": "wordart-texture",
+def get_choices(category):
+    return list(ALL_MODELS.get(category, {}).keys())
 
-    # 虚拟试衣
-    "虚拟试衣": "aitryon",
-    "虚拟试衣Plus": "aitryon-plus",
-    "虚拟试衣精修": "aitryon-refiner",
-    "虚拟试衣解析": "aitryon-parsing-v1",
-
-    # Emoji
-    "Emoji生成": "emoji-v1",
-    "Emoji检测": "emoji-detect-v1",
-
-    # 多语言图像
-    "通义千问-多语言图像": "qwen-mt-image",
-}
-
-# 文生视频模型选项
-VIDEO_MODEL_CHOICES = {
-    "通义万相2.6-T2V": "wan2.6-t2v",
-    "通义万相2.5-T2V预览": "wan2.5-t2v-preview",
-    "通义万相2.2-T2V-Plus": "wan2.2-t2v-plus",
-    "通义万相2.1-T2V-Plus": "wanx2.1-t2v-plus",
-    "通义万相2.1-T2V-Turbo": "wanx2.1-t2v-turbo",
-}
-
-# 图像编辑模型选项（需要上传参考图片）
-EDIT_MODEL_CHOICES = {
-    "通义千问-图像编辑": "qwen-image-edit",
-    "通义千问-图像编辑Plus": "qwen-image-edit-plus",
-    "通义千问-图像编辑Max": "qwen-image-edit-max",
-    "图像编辑Plus(2025-12)": "qwen-image-edit-plus-2025-12-15",
-    "图像编辑Plus(2025-10)": "qwen-image-edit-plus-2025-10-30",
-    "图像编辑Max(2026)": "qwen-image-edit-max-2026-01-16",
-}
+def get_model_id(category, name):
+    return ALL_MODELS.get(category, {}).get(name)
 
 # 尺寸选项
 SIZE_CHOICES = [
@@ -128,6 +131,16 @@ SIZE_CHOICES = [
     "1280*720",
     "1920*1080",
 ]
+
+# 极速生图专用尺寸
+TURBO_SIZE_CHOICES = [
+    "1024*1024",
+    "720*1280",
+    "1280*720",
+]
+
+# 视频分辨率档位
+RESOLUTION_CHOICES = ["480P", "720P", "1080P"]
 
 def load_saved_api_key():
     """从本地文件加载保存的 API Key"""
@@ -206,15 +219,15 @@ def generate_video(prompt, model_name, size, duration, audio_url):
 def generate_image(prompt, model_name, size, seed=None):
     """生成图片"""
     global generator
-    
+
     if generator is None:
         return None, "❌ 请先设置 API Key"
-    
+
     if not prompt.strip():
         return None, "❌ 请输入提示词"
-    
+
     model = MODEL_CHOICES.get(model_name, "wanx-v1")
-    
+
     # 处理 seed
     seed_val = None
     if seed is not None and seed != "":
@@ -222,7 +235,7 @@ def generate_image(prompt, model_name, size, seed=None):
             seed_val = int(seed)
         except:
             pass
-    
+
     try:
         result = generator.generate_image(
             prompt=prompt.strip(),
@@ -230,14 +243,14 @@ def generate_image(prompt, model_name, size, seed=None):
             size=size,
             seed=seed_val
         )
-        
+
         if result["success"]:
             # 读取生成的图片
             images = []
             for file_path in result["files"]:
                 if os.path.exists(file_path):
                     images.append(file_path)
-            
+
             if images:
                 file_list = "\n".join([f"📁 {f}" for f in result["files"]])
                 return images, f"✅ 生成成功！\n\n保存位置:\n{file_list}"
@@ -245,7 +258,41 @@ def generate_image(prompt, model_name, size, seed=None):
                 return None, "⚠️ 图片已生成但未能读取文件"
         else:
             return None, f"❌ 生成失败: {result.get('error', '未知错误')}"
-            
+
+    except Exception as e:
+        return None, f"❌ 错误: {str(e)}"
+
+
+def generate_turbo_image(prompt, model_name, size):
+    """极速生成图片 (Z-IMAGE-turbo)"""
+    global generator
+
+    if generator is None:
+        return None, "❌ 请先设置 API Key"
+
+    if not prompt.strip():
+        return None, "❌ 请输入提示词"
+
+    model = TURBO_MODEL_CHOICES.get(model_name, "z-image-turbo")
+
+    try:
+        # 极速模型通常不支持 seed
+        result = generator.generate_image(
+            prompt=prompt.strip(),
+            model=model,
+            size=size
+        )
+
+        if result["success"]:
+            images = [f for f in result["files"] if os.path.exists(f)]
+            if images:
+                file_list = "\n".join([f"📁 {f}" for f in result["files"]])
+                return images, f"⚡ 极速生成成功！\n\n保存位置:\n{file_list}"
+            else:
+                return None, "⚠️ 图片已生成但未能读取文件"
+        else:
+            return None, f"❌ 生成失败: {result.get('error', '未知错误')}"
+
     except Exception as e:
         return None, f"❌ 错误: {str(e)}"
 
@@ -302,6 +349,77 @@ def edit_image(prompt, image, model_name, size, seed=None):
         return None, f"❌ 错误: {str(e)}"
 
 
+def generate_i2v(prompt, image, model_name, resolution, duration, audio_url, shot_type, prompt_extend):
+    """图生视频"""
+    global generator
+
+    if generator is None:
+        return None, "❌ 请先设置 API Key"
+
+    if image is None:
+        return None, "❌ 请上传首帧图片"
+
+    if not prompt.strip():
+        return None, "❌ 请输入动态描述"
+
+    model = I2V_MODEL_CHOICES.get(model_name, "wan2.6-i2v-flash")
+
+    try:
+        result = generator.image_to_video(
+            prompt=prompt.strip(),
+            image_path=image,
+            model=model,
+            resolution=resolution,
+            duration=duration,
+            audio_url=audio_url if audio_url.strip() else None,
+            shot_type=shot_type,
+            prompt_extend=prompt_extend
+        )
+
+        if result["success"]:
+            video_path = result["files"][0]
+            return video_path, f"✅ 图生视频成功！\n\n保存位置: {video_path}"
+        else:
+            return None, f"❌ 生成失败: {result.get('error', '未知错误')}"
+
+    except Exception as e:
+        return None, f"❌ 错误: {str(e)}"
+
+
+def generate_kf2v(prompt, first_img, last_img, model_name, resolution, prompt_extend, neg_prompt, template):
+    """首尾帧生视频 / 视频特效"""
+    global generator
+
+    if generator is None:
+        return None, "❌ 请先设置 API Key"
+
+    if first_img is None:
+        return None, "❌ 请至少上传首帧图片"
+
+    model = KF2V_MODEL_CHOICES.get(model_name, "wan2.2-kf2v-flash")
+
+    try:
+        result = generator.frames_to_video(
+            prompt=prompt.strip(),
+            first_frame=first_img,
+            last_frame=last_img if last_img else None,
+            model=model,
+            resolution=resolution,
+            prompt_extend=prompt_extend,
+            negative_prompt=neg_prompt.strip() if neg_prompt else None,
+            template=template.strip() if template else None
+        )
+
+        if result["success"]:
+            video_path = result["files"][0]
+            return video_path, f"✅ 视频生成成功！\n\n保存位置: {video_path}"
+        else:
+            return None, f"❌ 生成失败: {result.get('error', '未知错误')}"
+
+    except Exception as e:
+        return None, f"❌ 错误: {str(e)}"
+
+
 def create_ui():
     """创建Gradio界面"""
     
@@ -315,7 +433,7 @@ def create_ui():
         gr.Markdown(f"""
         # 🎨 阿里云百炼文生图工具
 
-        **版本: {VERSION}** | 支持文生图、文生视频和图像编辑
+        **版本: {VERSION}** | 支持文生图、极速生图、文生视频、图生视频、首尾帧视频和图像编辑
         """)
 
         # API Key 设置区域
@@ -353,7 +471,7 @@ def create_ui():
                 # ========== 文生图选项卡 ==========
                 with gr.TabItem("📝 文生图"):
                     gr.Markdown("**输入文字描述生成图片**")
-                    
+
                     with gr.Row():
                         with gr.Column(scale=2):
                             prompt_input = gr.Textbox(
@@ -362,20 +480,20 @@ def create_ui():
                                 lines=3,
                                 max_lines=5
                             )
-                        
+
                         with gr.Column(scale=1):
                             model_dropdown = gr.Dropdown(
                                 label="选择模型",
                                 choices=list(MODEL_CHOICES.keys()),
                                 value="通义万相-文生图V1"
                             )
-                            
+
                             size_dropdown = gr.Dropdown(
                                 label="图片尺寸",
                                 choices=SIZE_CHOICES,
                                 value="1024*1024"
                             )
-                            
+
                             seed_input = gr.Number(
                                 label="随机种子 (可选)",
                                 value=None,
@@ -383,12 +501,12 @@ def create_ui():
                                 minimum=0,
                                 maximum=999999999
                             )
-                    
+
                     generate_btn = gr.Button("🚀 生成图片", variant="primary", size="lg")
-                    
+
                     gr.Markdown("---")
                     gr.Markdown("### 🖼️ 生成结果")
-                    
+
                     with gr.Row():
                         with gr.Column():
                             output_gallery = gr.Gallery(
@@ -400,7 +518,7 @@ def create_ui():
                                 height="auto",
                                 object_fit="contain"
                             )
-                        
+
                         with gr.Column():
                             output_status = gr.Textbox(
                                 label="状态信息",
@@ -408,20 +526,229 @@ def create_ui():
                                 max_lines=15,
                                 interactive=False
                             )
-                    
+
                     # 使用说明
                     gr.Markdown("""
                     ---
                     ### 💡 提示词技巧
-                    
+
                     - 使用详细的描述，包含主体、场景、风格、光线等
                     - 可以指定艺术风格，如"油画风格"、"水彩画"、"赛博朋克"等
                     - 支持中英文输入
-                    
-                    **示例**: 
+
+                    **示例**:
                     - "一只可爱的橘猫坐在窗台上，阳光洒在身上，写实风格"
                     - "未来城市夜景，霓虹灯闪烁，赛博朋克风格，高清细节"
                     """)
+
+                # ========== 极速生图选项卡 (Z-IMAGE-turbo) ==========
+                with gr.TabItem("⚡ 极速生图"):
+                    gr.Markdown("**亚秒级极速生成，即刻呈现**")
+
+                    with gr.Row():
+                        with gr.Column(scale=2):
+                            turbo_prompt_input = gr.Textbox(
+                                label="提示词 (Prompt)",
+                                placeholder="输入您想要生成的画面描述...",
+                                lines=3,
+                                max_lines=5
+                            )
+
+                        with gr.Column(scale=1):
+                            turbo_model_dropdown = gr.Dropdown(
+                                label="选择模型",
+                                choices=list(TURBO_MODEL_CHOICES.keys()),
+                                value="Z-IMAGE-turbo 极速生图"
+                            )
+
+                            turbo_size_dropdown = gr.Dropdown(
+                                label="图片尺寸",
+                                choices=TURBO_SIZE_CHOICES,
+                                value="1024*1024"
+                            )
+
+                    turbo_generate_btn = gr.Button("⚡ 极速生成", variant="primary", size="lg")
+
+                    gr.Markdown("---")
+                    gr.Markdown("### 🖼️ 生成结果")
+
+                    with gr.Row():
+                        with gr.Column():
+                            turbo_output_gallery = gr.Gallery(
+                                label="生成的图片",
+                                show_label=True,
+                                columns=1,
+                                height="auto",
+                                object_fit="contain"
+                            )
+
+                        with gr.Column():
+                            turbo_output_status = gr.Textbox(
+                                label="状态信息",
+                                lines=10,
+                                interactive=False
+                            )
+
+                    gr.Markdown("""
+                    ---
+                    ### ⚡ Z-IMAGE-turbo 特点
+                    - **极速**: 亚秒级推理，无需长时间等待
+                    - **高质量**: 支持 1024*1024 高清输出
+                    - **双语**: 完美支持中文和英文指令
+                    """)
+
+                # ========== 图生视频选项卡 ==========
+                with gr.TabItem("🎬 图生视频"):
+                    gr.Markdown("**上传首帧图片并描述动作生成视频**")
+
+                    with gr.Row():
+                        with gr.Column(scale=1):
+                            i2v_image_input = gr.Image(
+                                label="上传首帧图片",
+                                type="filepath",
+                                height=300
+                            )
+
+                        with gr.Column(scale=2):
+                            i2v_prompt_input = gr.Textbox(
+                                label="动态描述 (Prompt)",
+                                placeholder="描述图片中应该发生的动作，例如：人物转头微笑，背景云朵流动",
+                                lines=3,
+                                max_lines=5
+                            )
+
+                            i2v_audio_url = gr.Textbox(
+                                label="音频URL (可选自动配音)",
+                                placeholder="输入音频URL",
+                                lines=1
+                            )
+
+                    with gr.Row():
+                        with gr.Column():
+                            i2v_model_dropdown = gr.Dropdown(
+                                label="选择模型",
+                                choices=list(I2V_MODEL_CHOICES.keys()),
+                                value="通义万相2.6-I2V-Flash"
+                            )
+
+                        with gr.Column():
+                            i2v_res_dropdown = gr.Dropdown(
+                                label="分辨率档位",
+                                choices=RESOLUTION_CHOICES,
+                                value="720P"
+                            )
+
+                        with gr.Column():
+                            i2v_duration = gr.Slider(
+                                label="视频时长 (秒)",
+                                minimum=2,
+                                maximum=15,
+                                value=5,
+                                step=1
+                            )
+
+                    with gr.Row():
+                        with gr.Column():
+                            i2v_shot_type = gr.Radio(
+                                label="镜头类型 (仅wan2.6)",
+                                choices=["single", "multi"],
+                                value="single"
+                            )
+                        with gr.Column():
+                            i2v_extend = gr.Checkbox(
+                                label="开启提示词智能改写",
+                                value=True
+                            )
+
+                    i2v_generate_btn = gr.Button("🚀 生成视频", variant="primary", size="lg")
+
+                    gr.Markdown("---")
+                    gr.Markdown("### 🎬 生成结果")
+
+                    with gr.Row():
+                        with gr.Column():
+                            i2v_video_output = gr.Video(
+                                label="生成的视频",
+                                show_label=True
+                            )
+
+                        with gr.Column():
+                            i2v_output_status = gr.Textbox(
+                                label="状态信息",
+                                lines=10,
+                                interactive=False
+                            )
+
+                # ========== 首尾帧视频选项卡 ==========
+                with gr.TabItem("🎞️ 首尾帧视频"):
+                    gr.Markdown("**上传起始和结束图片，生成中间过渡视频**")
+
+                    with gr.Row():
+                        with gr.Column():
+                            kf2v_first_input = gr.Image(
+                                label="上传首帧 (起始)",
+                                type="filepath",
+                                height=250
+                            )
+                        with gr.Column():
+                            kf2v_last_input = gr.Image(
+                                label="上传尾帧 (结束)",
+                                type="filepath",
+                                height=250
+                            )
+
+                    with gr.Row():
+                        with gr.Column(scale=2):
+                            kf2v_prompt_input = gr.Textbox(
+                                label="过渡描述 (Prompt)",
+                                placeholder="描述首帧到尾帧之间发生的动作...",
+                                lines=3
+                            )
+                            with gr.Row():
+                                kf2v_neg_prompt = gr.Textbox(
+                                    label="反向提示词 (Negative)",
+                                    placeholder="不希望出现的元素...",
+                                    scale=1
+                                )
+                                kf2v_template = gr.Textbox(
+                                    label="特效模板 (Template)",
+                                    placeholder="例如: hanfu-1",
+                                    scale=1
+                                )
+                        with gr.Column(scale=1):
+                            kf2v_model_dropdown = gr.Dropdown(
+                                label="选择模型",
+                                choices=list(KF2V_MODEL_CHOICES.keys()),
+                                value="通义万相2.2-KF2V-Flash"
+                            )
+                            kf2v_res_dropdown = gr.Dropdown(
+                                label="分辨率档位",
+                                choices=RESOLUTION_CHOICES,
+                                value="480P"
+                            )
+                            kf2v_extend = gr.Checkbox(
+                                label="开启提示词智能改写",
+                                value=True
+                            )
+
+                    kf2v_generate_btn = gr.Button("🚀 生成过渡视频", variant="primary", size="lg")
+
+                    gr.Markdown("---")
+                    gr.Markdown("### 🎞️ 生成结果")
+
+                    with gr.Row():
+                        with gr.Column():
+                            kf2v_video_output = gr.Video(
+                                label="生成的视频",
+                                show_label=True
+                            )
+
+                        with gr.Column():
+                            kf2v_output_status = gr.Textbox(
+                                label="状态信息",
+                                lines=10,
+                                interactive=False
+                            )
                 
                 # ========== 文生视频选项卡 ==========
                 with gr.TabItem("🎥 文生视频"):
@@ -570,18 +897,95 @@ def create_ui():
                     gr.Markdown("""
                     ---
                     ### 💡 编辑指令技巧
-                    
+
                     - 清晰描述您想要修改的内容
                     - 可以指定添加、删除、修改图像中的元素
                     - 支持风格转换、背景替换、局部修改等
-                    
-                    **示例**: 
+
+                    **示例**:
                     - "把背景换成星空"
                     - "给人物穿上红色外套"
                     - "将图片转换成油画风格"
                     - "去掉图片中的水印"
                     """)
-        
+
+                # ========== ⚙️ 模型管理选项卡 ==========
+                with gr.TabItem("⚙️ 模型管理"):
+                    gr.Markdown("### 自定义模型列表管理")
+
+                    with gr.Row():
+                        with gr.Column():
+                            cat_select = gr.Dropdown(
+                                label="模型分类",
+                                choices=[
+                                    ("📝 文生图", "image"),
+                                    ("⚡ 极速生图", "turbo"),
+                                    ("🎥 文生视频", "video"),
+                                    ("🎬 图生视频", "i2v"),
+                                    ("🎞️ 首尾帧视频", "kf2v"),
+                                    ("✏️ 图像编辑", "edit")
+                                ],
+                                value="image"
+                            )
+
+                            existing_models = gr.Dropdown(
+                                label="现有模型",
+                                choices=get_choices("image")
+                            )
+
+                            delete_btn = gr.Button("🗑️ 删除选中模型", variant="stop")
+
+                        with gr.Column():
+                            new_name = gr.Textbox(label="显示名称 (例如: 通义万相2.6)", placeholder="请输入名称")
+                            new_id = gr.Textbox(label="模型 ID (例如: wan2.6-t2i)", placeholder="请输入百炼官方 ID")
+                            add_btn = gr.Button("➕ 添加模型", variant="primary")
+
+                    gr.Markdown("---")
+                    save_config_btn = gr.Button("💾 保存配置并更新界面", variant="primary", size="lg")
+                    manage_status = gr.Textbox(label="操作状态", interactive=False)
+
+            # --- 模型管理内部逻辑 ---
+            def on_cat_change(cat):
+                return gr.update(choices=get_choices(cat), value=None)
+
+            def on_add_model(cat, name, m_id):
+                if not name or not m_id: return gr.update(choices=get_choices(cat)), "❌ 名称和 ID 不能为空"
+                ALL_MODELS[cat][name] = m_id
+                return gr.update(choices=get_choices(cat), value=name), f"✅ 已添加: {name}"
+
+            def on_del_model(cat, name):
+                if not name: return gr.update(choices=get_choices(cat)), "❌ 请先选择要删除的模型"
+                if name in ALL_MODELS[cat]:
+                    del ALL_MODELS[cat][name]
+                return gr.update(choices=get_choices(cat), value=None), f"🗑️ 已删除: {name}"
+
+            def on_save_all():
+                save_models_config(ALL_MODELS)
+                update_all_choices()
+                # 返回所有下拉菜单的更新对象
+                return [
+                    "✅ 配置已保存，所有界面已刷新！",
+                    gr.update(choices=get_choices("image")),
+                    gr.update(choices=get_choices("turbo")),
+                    gr.update(choices=get_choices("video")),
+                    gr.update(choices=get_choices("i2v")),
+                    gr.update(choices=get_choices("kf2v")),
+                    gr.update(choices=get_choices("edit"))
+                ]
+
+            cat_select.change(on_cat_change, inputs=[cat_select], outputs=[existing_models])
+            add_btn.click(on_add_model, inputs=[cat_select, new_name, new_id], outputs=[existing_models, manage_status])
+            delete_btn.click(on_del_model, inputs=[cat_select, existing_models], outputs=[existing_models, manage_status])
+
+            # 保存按钮触发全站刷新
+            save_config_btn.click(
+                on_save_all,
+                outputs=[
+                    manage_status, model_dropdown, turbo_model_dropdown,
+                    video_model_dropdown, i2v_model_dropdown, kf2v_model_dropdown, edit_model_dropdown
+                ]
+            )
+
         # 事件绑定
         set_api_btn.click(
             fn=init_generator,
@@ -608,6 +1012,35 @@ def create_ui():
             fn=generate_video,
             inputs=[video_prompt_input, video_model_dropdown, video_size_dropdown, video_duration_input, audio_url_input],
             outputs=[video_output, video_output_status]
+        )
+
+        # 极速生图事件绑定
+        turbo_generate_btn.click(
+            fn=generate_turbo_image,
+            inputs=[turbo_prompt_input, turbo_model_dropdown, turbo_size_dropdown],
+            outputs=[turbo_output_gallery, turbo_output_status]
+        )
+
+        # 图生视频事件绑定
+        i2v_generate_btn.click(
+            fn=generate_i2v,
+            inputs=[
+                i2v_prompt_input, i2v_image_input, i2v_model_dropdown,
+                i2v_res_dropdown, i2v_duration, i2v_audio_url,
+                i2v_shot_type, i2v_extend
+            ],
+            outputs=[i2v_video_output, i2v_output_status]
+        )
+
+        # 首尾帧视频事件绑定
+        kf2v_generate_btn.click(
+            fn=generate_kf2v,
+            inputs=[
+                kf2v_prompt_input, kf2v_first_input, kf2v_last_input,
+                kf2v_model_dropdown, kf2v_res_dropdown, kf2v_extend,
+                kf2v_neg_prompt, kf2v_template
+            ],
+            outputs=[kf2v_video_output, kf2v_output_status]
         )
 
     return demo
@@ -646,7 +1079,7 @@ def main():
             
             demo.launch(
                 share=False,
-                inbrowser=False,
+                inbrowser=True,
                 server_name="127.0.0.1",
                 server_port=port,
                 show_error=True,
@@ -672,7 +1105,7 @@ def main():
                 try:
                     demo.launch(
                         share=True,
-                        inbrowser=False,
+                        inbrowser=True,
                         server_name="127.0.0.1",
                         server_port=port,
                         show_error=True,
@@ -695,7 +1128,7 @@ def main():
                         demo_local = create_ui()
                         demo_local.launch(
                             share=False,
-                            inbrowser=False,
+                            inbrowser=True,
                             server_name="0.0.0.0",
                             server_port=port,
                             show_error=True,

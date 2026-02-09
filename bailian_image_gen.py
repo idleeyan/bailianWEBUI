@@ -22,6 +22,8 @@ class BailianImageGenerator:
     API_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
     # 图生图（通义万相图像编辑）API
     IMAGE_EDIT_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis"
+    # 首尾帧生视频 API
+    KF2V_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/image2video/video-synthesis"
     # 文生视频 API
     VIDEO_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis"
     # 千问图像编辑 API（多模态生成）
@@ -229,6 +231,122 @@ class BailianImageGenerator:
                 return self._wait_for_video_result(task_id)
             else:
                 return {"success": False, "error": f"提交任务失败: {result}"}
+        except Exception as e:
+            return {"success": False, "error": f"异常: {str(e)}"}
+
+    def image_to_video(self, prompt, image_path, model="wan2.6-i2v-flash", resolution="720P", duration=5, audio_url=None, negative_prompt=None, shot_type="single", prompt_extend=True):
+        """
+        图生视频
+        参考文档: 图生视频构建说明.txt
+        """
+        try:
+            with open(image_path, "rb") as f:
+                image_data = base64.b64encode(f.read()).decode("utf-8")
+        except Exception as e:
+            return {"success": False, "error": f"读取图片失败: {str(e)}"}
+
+        ext = image_path.lower().split('.')[-1] if '.' in image_path else 'png'
+        mime_type = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png'}.get(ext, 'image/png')
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+            "X-DashScope-Async": "enable"
+        }
+
+        payload = {
+            "model": model,
+            "input": {
+                "prompt": prompt,
+                "img_url": f"data:{mime_type};base64,{image_data}"
+            },
+            "parameters": {
+                "resolution": resolution,
+                "prompt_extend": prompt_extend
+            }
+        }
+
+        if audio_url:
+            payload["input"]["audio_url"] = audio_url
+        if negative_prompt:
+            payload["input"]["negative_prompt"] = negative_prompt
+
+        # 处理 wan2.6 的镜头类型
+        if "wan2.6" in model:
+            payload["parameters"]["shot_type"] = shot_type
+
+        # 根据模型限制时长
+        if model in ["wan2.6-i2v-flash", "wan2.6-i2v"]:
+            payload["parameters"]["duration"] = max(2, min(15, int(duration)))
+        elif model in ["wan2.5-i2v-preview"]:
+            payload["parameters"]["duration"] = 10 if int(duration) >= 10 else 5
+        elif model == "wanx2.1-i2v-turbo":
+            payload["parameters"]["duration"] = max(3, min(5, int(duration)))
+
+        print(f"\n正在提交图生视频任务 (异步)...")
+        try:
+            response = requests.post(self.VIDEO_URL, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            result = response.json()
+            if "output" in result and "task_id" in result["output"]:
+                return self._wait_for_video_result(result["output"]["task_id"])
+            return {"success": False, "error": f"提交失败: {result}"}
+        except Exception as e:
+            return {"success": False, "error": f"异常: {str(e)}"}
+
+    def frames_to_video(self, prompt, first_frame, last_frame=None, model="wan2.2-kf2v-flash", resolution="480P", prompt_extend=True, negative_prompt=None, template=None):
+        """
+        首尾帧生视频 / 视频特效
+        """
+        def get_b64(path):
+            with open(path, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+                ext = path.lower().split('.')[-1] if '.' in path else 'png'
+                mime = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png'}.get(ext, 'image/png')
+                return f"data:{mime};base64,{data}"
+
+        try:
+            first_b64 = get_b64(first_frame)
+            last_b64 = get_b64(last_frame) if last_frame else None
+        except Exception as e:
+            return {"success": False, "error": f"读取图片失败: {str(e)}"}
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+            "X-DashScope-Async": "enable"
+        }
+
+        payload = {
+            "model": model,
+            "input": {
+                "first_frame_url": first_b64
+            },
+            "parameters": {
+                "resolution": resolution,
+                "prompt_extend": prompt_extend
+            }
+        }
+
+        # 根据模式填充 input
+        if template:
+            payload["input"]["template"] = template
+        else:
+            if last_b64:
+                payload["input"]["last_frame_url"] = last_b64
+            if prompt:
+                payload["input"]["prompt"] = prompt
+            if negative_prompt:
+                payload["input"]["negative_prompt"] = negative_prompt
+
+        print(f"\n正在提交首尾帧/特效视频任务 (异步)...")
+        try:
+            response = requests.post(self.KF2V_URL, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            result = response.json()
+            if "output" in result and "task_id" in result["output"]:
+                return self._wait_for_video_result(result["output"]["task_id"])
+            return {"success": False, "error": f"提交失败: {result}"}
         except Exception as e:
             return {"success": False, "error": f"异常: {str(e)}"}
 

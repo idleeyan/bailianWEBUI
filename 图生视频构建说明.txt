@@ -1,0 +1,207 @@
+万相-图生视频-基于首帧
+
+官方示例：
+
+多镜头叙事：
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.6-i2v-flash",
+    "input": {
+        "prompt": "一幅都市奇幻艺术的场景。一个充满动感的涂鸦艺术角色。一个由喷漆所画成的少年，正从一面混凝土墙上活过来。他一边用极快的语速演唱一首英文rap，一边摆着一个经典的、充满活力的说唱歌手姿势。场景设定在夜晚一个充满都市感的铁路桥下。灯光来自一盏孤零零的街灯，营造出电影般的氛围，充满高能量和惊人的细节。视频的音频部分完全由他的rap构成，没有其他对话或杂音。",
+        "img_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png",
+        "audio_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/ozwpvi/rap.mp3"
+    },
+    "parameters": {
+        "resolution": "720P",
+        "prompt_extend": true,
+        "duration": 10,
+        "shot_type":"multi"
+    }
+}'
+
+自动配音：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.5-i2v-preview",
+    "input": {
+        "prompt": "一幅都市奇幻艺术的场景。一个充满动感的涂鸦艺术角色。一个由喷漆所画成的少年，正从一面混凝土墙上活过来。他一边用极快的语速演唱一首英文rap，一边摆着一个经典的、充满活力的说唱歌手姿势。场景设定在夜晚一个充满都市感的铁路桥下。灯光来自一盏孤零零的街灯，营造出电影般的氛围，充满高能量和惊人的细节。视频的音频部分完全由他的rap构成，没有其他对话或杂音。",
+        "img_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true,
+        "duration": 10
+    }
+}'
+
+传入音频文件：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.5-i2v-preview",
+    "input": {
+        "prompt": "一幅都市奇幻艺术的场景。一个充满动感的涂鸦艺术角色。一个由喷漆所画成的少年，正从一面混凝土墙上活过来。他一边用极快的语速演唱一首英文rap，一边摆着一个经典的、充满活力的说唱歌手姿势。场景设定在夜晚一个充满都市感的铁路桥下。灯光来自一盏孤零零的街灯，营造出电影般的氛围，充满高能量和惊人的细节。视频的音频部分完全由他的rap构成，没有其他对话或杂音。",
+        "img_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png",
+        "audio_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/ozwpvi/rap.mp3"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true,
+        "duration": 10
+    }
+}'
+
+无声视频：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-i2v-plus",
+    "input": {
+        "prompt": "一只猫在草地上奔跑",
+        "img_url": "https://cdn.translate.alibaba.com/r/wanx-demo-1.png"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true
+    }
+}'
+
+使用Base64：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-i2v-plus",
+    "input": {
+        "prompt": "一只猫在草地上奔跑",
+        "img_url": "data:image/png;base64,GDU7MtCZzEbTbmRZ......"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true
+    }
+}'
+使用视频特效：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-i2v-plus",
+    "input": {
+        "prompt": "一只猫在草地上奔跑",
+        "img_url": "data:image/png;base64,GDU7MtCZzEbTbmRZ......"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true
+    }
+}'
+
+使用反向提示词：
+
+curl --location 'https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+    -H 'X-DashScope-Async: enable' \
+    -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "model": "wan2.2-i2v-plus",
+    "input": {
+        "prompt": "一只猫在草地上奔跑",
+        "negative_prompt": "花朵",
+        "img_url": "https://cdn.translate.alibaba.com/r/wanx-demo-1.png"
+    },
+    "parameters": {
+        "resolution": "480P",
+        "prompt_extend": true
+    }
+}'
+
+指定生成的视频分辨率档位，用于调整视频的清晰度（总像素）。模型根据选择的分辨率档位，自动缩放至相近总像素，视频宽高比将尽量与输入图像 img_url 的宽高比保持一致，详见常见问题。
+
+此参数的默认值和可用枚举值依赖于 model 参数，规则如下：
+
+wan2.6-i2v-flash：可选值：720P、1080P。默认值为1080P。
+
+wan2.6-i2v ：可选值：720P、1080P。默认值为1080P。
+
+wan2.6-i2v-us ：可选值：720P、1080P。默认值为1080P。
+
+wan2.5-i2v-preview ：可选值：480P、720P、1080P。默认值为1080P。
+
+wan2.2-i2v-flash：可选值：480P、720P、1080P。默认值为720P。
+
+wan2.2-i2v-plus：可选值：480P、1080P。默认值为1080P。
+
+wanx2.1-i2v-turbo：可选值：480P、720P。默认值为720P。
+
+wanx2.1-i2v-plus：可选值：720P。默认值为720P。
+
+示例值：1080P。
+
+duration integer （可选）
+
+重要
+duration直接影响费用，按秒计费，时间越长费用越高，请在调用前确认模型价格。
+
+生成视频的时长，单位为秒。该参数的取值依赖于 model参数：
+
+wan2.6-i2v-flash：取值为[2, 15]之间的整数。默认值为5。
+
+wan2.6-i2v：取值为[2, 15]之间的整数。默认值为5。
+
+wan2.6-i2v-us：可选值为5、10、15。默认值为5。
+
+wan2.5-i2v-preview：可选值为5、10。默认值为5。
+
+wan2.2-i2v-plus：固定为5秒，且不支持修改。
+
+wan2.2-i2v-flash：固定为5秒，且不支持修改。
+
+wanx2.1-i2v-plus：固定为5秒，且不支持修改。
+
+wanx2.1-i2v-turbo：可选值为3、4或5。默认值为5。
+
+示例值：5。
+
+prompt_extend boolean （可选）
+
+是否开启prompt智能改写。开启后使用大模型对输入prompt进行智能改写。对于较短的prompt生成效果提升明显，但会增加耗时。
+
+true：默认值，开启智能改写。
+
+false：不开启智能改写。
+
+示例值：true。
+
+shot_type string （可选）
+
+支持模型：wan2.6系列模型。
+
+指定生成视频的镜头类型，即视频是由一个连续镜头还是多个切换镜头组成。
+
+生效条件：仅当"prompt_extend": true 时生效。
+
+参数优先级：shot_type > prompt。例如，若 shot_type设置为"single"，即使 prompt 中包含“生成多镜头视频”，模型仍会输出单镜头视频。
+
+可选值：
+
+single：默认值，输出单镜头视频
+
+multi：输出多镜头视频。
