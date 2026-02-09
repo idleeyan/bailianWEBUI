@@ -24,6 +24,14 @@
 
 ## 安装
 
+### 方式一：自动安装（推荐）
+
+1. 确保已安装 Python 3.6 或更高版本
+2. 双击运行 `run_app.bat` 脚本
+3. 脚本会自动检查并激活虚拟环境，启动 Web UI
+
+### 方式二：手动安装
+
 1. 确保已安装 Python 3.6 或更高版本
 2. 安装依赖：
 
@@ -42,8 +50,13 @@ pip install requests gradio
 
 ### 方法一：Web UI模式（推荐！最方便）
 
-启动网页界面：
+#### 自动启动（推荐）
+```bash
+# Windows
+双击运行 run_app.bat
+```
 
+#### 手动启动
 ```bash
 python bailian_webui.py
 ```
